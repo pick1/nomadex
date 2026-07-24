@@ -1,0 +1,11 @@
+# Core (same as qwen-agent)
+langchain
+langchain-ollama
+langchain-openai
+langgraph
+rich
+# Nomadex additions
+feedparser
+duckduckgo-search
+google-search-results   # SerpApi — optional, needs SERPAPI_KEY
+requests
