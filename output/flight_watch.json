@@ -1,0 +1,10 @@
+{
+  "watches": [
+    {
+      "route": "LAX\u2192SYD",
+      "target_price_usd": 900,
+      "added_at": "2026-07-25T21:22:48.351464",
+      "note": "LAX\u2192SYD cash price target for 4 people RT"
+    }
+  ]
+}

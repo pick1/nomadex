@@ -1,0 +1,24 @@
+{
+  "last_updated": "2026-07-25T21:22:43.052991",
+  "current_balance": 0,
+  "card": "Chase Sapphire Preferred",
+  "goal_eoy": 200000,
+  "gap": 200000,
+  "months_remaining": 5,
+  "needed_per_month": 40000,
+  "on_track": false,
+  "history": [
+    {
+      "recorded_at": "2026-07-25T21:03:10.593272",
+      "card": "Chase Sapphire Preferred",
+      "balance": 0,
+      "note": "Initial balance check - card not yet active"
+    },
+    {
+      "recorded_at": "2026-07-25T21:22:43.052977",
+      "card": "Chase Sapphire Preferred",
+      "balance": 0,
+      "note": "Updated to reflect 100k signup bonus eligibility"
+    }
+  ]
+}

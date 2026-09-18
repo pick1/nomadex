@@ -6,7 +6,7 @@
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
-
+import time
 import json
 import readline
 import atexit
@@ -164,26 +164,73 @@ async def run_agent():
         status.reset_turn()
         response_text = ""
 
+        done_event = threading.Event()
+
+        def _tick(live):
+            while not done_event.is_set():
+                live.update(status.render())
+                time.sleep(0.25)
+
         with Live(status.render(), refresh_per_second=4, console=console) as live:
+            ticker = threading.Thread(target=_tick, args=(live,), daemon=True)
+            ticker.start()
             try:
                 result = await agent.ainvoke({"messages": messages})
                 for msg in result["messages"]:
                     if hasattr(msg, "tool_calls") and msg.tool_calls:
                         for tc in msg.tool_calls:
                             status.tool_call(tc["name"], str(tc.get("args", "")))
-                            live.update(status.render())
                     if hasattr(msg, "content") and isinstance(msg.content, str) and msg.content:
-                        response_text = msg.content
+                         response_text = msg.content
                 status.done()
-                live.update(status.render())
             except Exception as e:
                 response_text = f"[red]Error: {e}[/]"
                 status.done()
-                live.update(status.render())
+            finally:
+                done_event.set()
+
 
         console.print(f"\n[bold gold1]nomadex[/] › {response_text}\n")
         history.append(AIMessage(content=response_text))
 
 
+#if __name__ == "__main__":
+#    asyncio.run(run_agent())
+
 if __name__ == "__main__":
+    import sys
+    if "--help" in sys.argv or "-h" in sys.argv:
+        print("""
+╔══════════════════════════════════════════════════════════════╗
+║  NOMADEX — travel intelligence + points optimizer            ║
+╠══════════════════════════════════════════════════════════════╣
+║  DEALS & ALERTS                                              ║
+║  > fetch the latest deals                                    ║
+║  > are there any Chase transfer bonuses live right now       ║
+║  > any award sales on LAX to Sydney                         ║
+║                                                              ║
+║  POINTS PLANNING                                             ║
+║  > project my points by EOY                                  ║
+║  > how many points for 4 economy tickets to Sydney           ║
+║  > update my points balance to 45000                         ║
+║                                                              ║
+║  FLIGHTS                                                     ║
+║  > search flights LAX to Sydney in March for 4 people        ║
+║  > watch LAX to SYD alert me below $900 per person           ║
+║                                                              ║
+║  KNOWLEDGE BASE                                              ║
+║  > fetch the article at <url>                                ║
+║  > what does my knowledge base say about Aeroplan            ║
+║  > embed all saved articles                                  ║
+║  > list my saved articles                                    ║
+║                                                              ║
+║  STRATEGY                                                    ║
+║  > what's the best card for groceries                        ║
+║  > is Plastiq worth it for my mortgage                       ║
+║  > what transfer partner gives best value for Sydney         ║
+║                                                              ║
+║  Type 'exit' to quit and save memory.                        ║
+╚══════════════════════════════════════════════════════════════╝
+""")
+        sys.exit(0)
     asyncio.run(run_agent())
